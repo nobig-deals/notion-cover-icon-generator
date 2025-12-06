@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { Search, Upload, Download, Maximize2, RotateCcw, ArrowDownToLine, Palette } from 'lucide-react';
 import * as Tabs from '@radix-ui/react-tabs';
 import UnsplashSearch from '@/components/UnsplashSearch';
-import GradientPicker, { type Gradient } from '@/components/GradientPicker';
+import { type Gradient } from '@/components/GradientPicker';
 import IconSearch from '@/components/IconSearch';
 import type { CanvasHandle } from '@/components/Canvas';
 import type { IconCanvasHandle } from '@/components/IconCanvas';

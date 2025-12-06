@@ -1,9 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import * as ReactDOM from 'react-dom/client';
 import * as TablerIcons from '@tabler/icons-react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+type IconProps = { size?: number; stroke?: number };
+type IconComponent = React.ComponentType<IconProps>;
 
 interface IconSearchProps {
   onSelectIcon: (iconSvg: string, iconName: string) => void;
@@ -32,7 +36,7 @@ export default function IconSearch({ onSelectIcon, selectedIconName }: IconSearc
   }, [query]);
 
   const handleIconClick = (iconName: string) => {
-    const IconComponent = (TablerIcons as Record<string, React.ComponentType<any>>)[iconName];
+    const IconComponent = (TablerIcons as Record<string, IconComponent>)[iconName];
 
     if (IconComponent) {
       // Create a temporary container to render the icon
@@ -40,10 +44,6 @@ export default function IconSearch({ onSelectIcon, selectedIconName }: IconSearc
       container.style.position = 'absolute';
       container.style.left = '-9999px';
       document.body.appendChild(container);
-
-      // Create the icon element with React
-      const React = require('react');
-      const ReactDOM = require('react-dom/client');
 
       const root = ReactDOM.createRoot(container);
       root.render(React.createElement(IconComponent, { size: 120, stroke: 2 }));
@@ -78,7 +78,7 @@ export default function IconSearch({ onSelectIcon, selectedIconName }: IconSearc
 
       <div className="grid grid-cols-8 gap-1 max-h-64 overflow-y-auto p-1">
         {filteredIcons.map((iconName) => {
-          const IconComponent = (TablerIcons as Record<string, React.ComponentType<any>>)[iconName];
+          const IconComponent = (TablerIcons as Record<string, IconComponent>)[iconName];
           const displayName = iconName.replace('Icon', '').replace(/([A-Z])/g, ' $1').trim();
 
           return (
