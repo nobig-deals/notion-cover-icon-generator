@@ -1,9 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { unsplash, type UnsplashPhoto } from '@/lib/unsplash';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
+
+interface UnsplashPhoto {
+  id: string;
+  urls: {
+    raw: string;
+    full: string;
+    regular: string;
+    small: string;
+    thumb: string;
+  };
+  alt_description: string | null;
+  description: string | null;
+  user: {
+    name: string;
+    username: string;
+  };
+}
 
 interface UnsplashSearchProps {
   onSelectImage: (imageUrl: string) => void;
@@ -23,19 +39,19 @@ export default function UnsplashSearch({ onSelectImage }: UnsplashSearchProps) {
     setError(null);
 
     try {
-      const result = await unsplash.search.getPhotos({
-        query,
-        perPage: 12,
-        orientation: 'landscape',
-      });
+      const response = await fetch(
+        `/api/unsplash/search?query=${encodeURIComponent(query)}&per_page=12&orientation=landscape`
+      );
 
-      if (result.errors) {
-        setError(result.errors[0]);
-      } else {
-        setPhotos(result.response?.results as UnsplashPhoto[] || []);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to search');
       }
+
+      const data = await response.json();
+      setPhotos(data.results || []);
     } catch (err) {
-      setError('Failed to search. Check your API key.');
+      setError(err instanceof Error ? err.message : 'Failed to search. Please try again.');
       console.error(err);
     } finally {
       setLoading(false);

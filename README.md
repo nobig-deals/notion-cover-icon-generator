@@ -57,7 +57,7 @@ A web application for creating custom cover images (1500x600px) and icons (280x2
 
 4. Add your Unsplash API key to `.env.local`:
    ```
-   NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
+   UNSPLASH_ACCESS_KEY=your_unsplash_access_key_here
    ```
 
 5. Start the development server:
@@ -106,7 +106,6 @@ A web application for creating custom cover images (1500x600px) and icons (280x2
 │   ├── GradientPicker.tsx
 │   └── ...
 ├── lib/
-│   ├── unsplash.ts       # Unsplash API client
 │   └── utils.ts          # Utility functions
 └── package.json
 ```
