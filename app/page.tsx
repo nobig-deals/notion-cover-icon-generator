@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { Search, Upload, Download, Maximize2, RotateCcw, ArrowDownToLine, Palette } from 'lucide-react';
+import { Search, Upload, Download, Maximize2, RotateCcw, ArrowDownToLine, Palette, X } from 'lucide-react';
 import * as Tabs from '@radix-ui/react-tabs';
 import UnsplashSearch from '@/components/UnsplashSearch';
 import { type Gradient } from '@/components/GradientPicker';
@@ -164,48 +164,77 @@ export default function Home() {
               {/* Controls */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {/* Background */}
-                <button
-                  onClick={() => setShowSearch(!showSearch)}
-                  className={cn(
-                    "flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium",
-                    backgroundImage
-                      ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                      : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                <div className="relative">
+                  <button
+                    onClick={() => setShowSearch(!showSearch)}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium",
+                      backgroundImage
+                        ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    )}
+                  >
+                    <Search className="w-4 h-4" />
+                    {backgroundImage ? "✓ Background Set" : "Search Background"}
+                  </button>
+                  {backgroundImage && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBackgroundImage(null);
+                      }}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
+                      title="Remove background"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   )}
-                >
-                  <Search className="w-4 h-4" />
-                  {backgroundImage ? "✓ Background Set" : "Search Background"}
-                </button>
+                </div>
 
                 {/* Logo Upload */}
-                <label
-                  className={cn(
-                    "flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium cursor-pointer",
-                    logoImage
-                      ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                      : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                <div className="relative">
+                  <label
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium cursor-pointer",
+                      logoImage
+                        ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    )}
+                  >
+                    <Upload className="w-4 h-4" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const img = new Image();
+                            img.onload = () => handleLogoUpload(img);
+                            img.src = event.target?.result as string;
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {logoImage ? "✓ Logo Uploaded" : "Upload Logo"}
+                  </label>
+                  {logoImage && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLogoImage(null);
+                        logoRef.current = null;
+                      }}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
+                      title="Remove logo"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   )}
-                >
-                  <Upload className="w-4 h-4" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const img = new Image();
-                          img.onload = () => handleLogoUpload(img);
-                          img.src = event.target?.result as string;
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                  {logoImage ? "✓ Logo Uploaded" : "Upload Logo"}
-                </label>
+                </div>
 
                 {/* Export */}
                 <button
