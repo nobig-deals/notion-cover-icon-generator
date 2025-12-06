@@ -36,7 +36,7 @@ export default function IconSearch({ onSelectIcon, selectedIconName }: IconSearc
   }, [query]);
 
   const handleIconClick = (iconName: string) => {
-    const IconComponent = (TablerIcons as Record<string, IconComponent>)[iconName];
+    const IconComponent = (TablerIcons as unknown as Record<string, IconComponent>)[iconName];
 
     if (IconComponent) {
       // Create a temporary container to render the icon
@@ -78,7 +78,7 @@ export default function IconSearch({ onSelectIcon, selectedIconName }: IconSearc
 
       <div className="grid grid-cols-8 gap-1 max-h-64 overflow-y-auto p-1">
         {filteredIcons.map((iconName) => {
-          const IconComponent = (TablerIcons as Record<string, IconComponent>)[iconName];
+          const IconComponent = (TablerIcons as unknown as Record<string, IconComponent>)[iconName];
           const displayName = iconName.replace('Icon', '').replace(/([A-Z])/g, ' $1').trim();
 
           return (
