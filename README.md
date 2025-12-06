@@ -2,6 +2,8 @@
 
 A web application for creating custom cover images (1500x600px) and icons (280x280px) for Notion pages.
 
+**Demo:** [https://cover-icon-generator.nobig.deals/](https://cover-icon-generator.nobig.deals/)
+
 ## Features
 
 ### Cover Generator
