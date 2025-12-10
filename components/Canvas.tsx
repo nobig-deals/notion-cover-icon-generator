@@ -6,8 +6,17 @@ import { fabric } from 'fabric';
 const NOTION_COVER_WIDTH = 1500;
 const NOTION_COVER_HEIGHT = 600;
 
+export interface CoverGradient {
+  name: string;
+  start: string;
+  end: string;
+  angle: number;
+}
+
 interface CanvasProps {
   backgroundImage: string | null;
+  backgroundGradient?: CoverGradient | null;
+  backgroundSolidColor?: string | null;
   logoImage: HTMLImageElement | null;
   onLogoTransform?: (attrs: { x: number; y: number; width: number; height: number; rotation: number }) => void;
 }
@@ -20,7 +29,7 @@ export interface CanvasHandle {
   setLogoColor: (color: string) => void;
 }
 
-const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ backgroundImage, logoImage, onLogoTransform }, ref) => {
+const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ backgroundImage, backgroundGradient, backgroundSolidColor, logoImage, onLogoTransform }, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const [logoObj, setLogoObj] = useState<fabric.Image | null>(null);
@@ -119,7 +128,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ backgroundImage, logoIma
     };
   }, []);
 
-  // Handle background image
+  // Handle background image, gradient, or solid color
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
 
@@ -132,6 +141,9 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ backgroundImage, logoIma
         canvas.remove(obj);
       }
     });
+
+    // Reset canvas background
+    canvas.backgroundColor = '#f3f4f6';
 
     if (backgroundImage) {
       fabric.Image.fromURL(
@@ -155,8 +167,62 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ backgroundImage, logoIma
         },
         { crossOrigin: 'anonymous' }
       );
+    } else if (backgroundGradient) {
+      // Create gradient background
+      const gradientRect = new fabric.Rect({
+        left: 0,
+        top: 0,
+        width: NOTION_COVER_WIDTH,
+        height: NOTION_COVER_HEIGHT,
+        selectable: false,
+        evented: false,
+      });
+
+      // Convert angle to coordinates for fabric.js gradient
+      const angleRad = (backgroundGradient.angle - 90) * Math.PI / 180;
+      const x1 = 0.5 - Math.cos(angleRad) * 0.5;
+      const y1 = 0.5 - Math.sin(angleRad) * 0.5;
+      const x2 = 0.5 + Math.cos(angleRad) * 0.5;
+      const y2 = 0.5 + Math.sin(angleRad) * 0.5;
+
+      gradientRect.set('fill', new fabric.Gradient({
+        type: 'linear',
+        coords: {
+          x1: x1 * NOTION_COVER_WIDTH,
+          y1: y1 * NOTION_COVER_HEIGHT,
+          x2: x2 * NOTION_COVER_WIDTH,
+          y2: y2 * NOTION_COVER_HEIGHT,
+        },
+        colorStops: [
+          { offset: 0, color: backgroundGradient.start },
+          { offset: 1, color: backgroundGradient.end },
+        ],
+      }));
+
+      (gradientRect as fabric.Rect & { isBackground?: boolean }).isBackground = true;
+      canvas.add(gradientRect);
+      canvas.sendToBack(gradientRect);
+      canvas.renderAll();
+    } else if (backgroundSolidColor) {
+      // Create solid color background
+      const solidRect = new fabric.Rect({
+        left: 0,
+        top: 0,
+        width: NOTION_COVER_WIDTH,
+        height: NOTION_COVER_HEIGHT,
+        fill: backgroundSolidColor,
+        selectable: false,
+        evented: false,
+      });
+
+      (solidRect as fabric.Rect & { isBackground?: boolean }).isBackground = true;
+      canvas.add(solidRect);
+      canvas.sendToBack(solidRect);
+      canvas.renderAll();
+    } else {
+      canvas.renderAll();
     }
-  }, [backgroundImage]);
+  }, [backgroundImage, backgroundGradient, backgroundSolidColor]);
 
   // Handle logo image
   useEffect(() => {

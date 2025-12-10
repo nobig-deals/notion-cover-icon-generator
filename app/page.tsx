@@ -7,7 +7,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import UnsplashSearch from '@/components/UnsplashSearch';
 import { type Gradient } from '@/components/GradientPicker';
 import IconSearch from '@/components/IconSearch';
-import type { CanvasHandle } from '@/components/Canvas';
+import type { CanvasHandle, CoverGradient } from '@/components/Canvas';
 import type { IconCanvasHandle } from '@/components/IconCanvas';
 import { cn } from '@/lib/utils';
 
@@ -31,9 +31,60 @@ const IconCanvas = dynamic(() => import('@/components/IconCanvas'), {
   ),
 });
 
+// Cover background gradients - vibrant
+const COVER_GRADIENTS_VIBRANT: CoverGradient[] = [
+  { name: 'Blue Purple', start: '#667eea', end: '#764ba2', angle: 135 },
+  { name: 'Pink Orange', start: '#f857a6', end: '#ff5858', angle: 135 },
+  { name: 'Green Blue', start: '#11998e', end: '#38ef7d', angle: 135 },
+  { name: 'Yellow Pink', start: '#fa709a', end: '#fee140', angle: 135 },
+  { name: 'Purple Pink', start: '#c471f5', end: '#fa71cd', angle: 135 },
+  { name: 'Ocean Blue', start: '#2e3192', end: '#1bffff', angle: 135 },
+  { name: 'Sunset', start: '#ff6b6b', end: '#feca57', angle: 135 },
+  { name: 'Forest', start: '#134e5e', end: '#71b280', angle: 135 },
+  { name: 'Royal', start: '#141e30', end: '#243b55', angle: 135 },
+  { name: 'Peach', start: '#ed4264', end: '#ffedbc', angle: 135 },
+  { name: 'Mint', start: '#00d2ff', end: '#3a7bd5', angle: 135 },
+  { name: 'Rose', start: '#f12711', end: '#f5af19', angle: 135 },
+];
+
+// Cover background gradients - pastel
+const COVER_GRADIENTS_PASTEL: CoverGradient[] = [
+  { name: 'Pastel Pink-Peach', start: '#FFD1DC', end: '#FFDAB9', angle: 135 },
+  { name: 'Pastel Blue-Mint', start: '#AEC6CF', end: '#B5EAD7', angle: 135 },
+  { name: 'Pastel Mint-Green', start: '#B5EAD7', end: '#C1E1C1', angle: 135 },
+  { name: 'Pastel Lavender-Pink', start: '#E6E6FA', end: '#FFD1DC', angle: 135 },
+  { name: 'Pastel Peach-Yellow', start: '#FFDAB9', end: '#FDFD96', angle: 135 },
+  { name: 'Pastel Yellow-Mint', start: '#FDFD96', end: '#B5EAD7', angle: 135 },
+  { name: 'Pastel Coral-Peach', start: '#F8B195', end: '#FFDAB9', angle: 135 },
+  { name: 'Pastel Green-Cyan', start: '#C1E1C1', end: '#C0E8F9', angle: 135 },
+  { name: 'Pastel Purple-Lavender', start: '#D8BFD8', end: '#E6E6FA', angle: 135 },
+  { name: 'Pastel Orange-Yellow', start: '#FFB347', end: '#FDFD96', angle: 135 },
+  { name: 'Pastel Cyan-Blue', start: '#C0E8F9', end: '#AEC6CF', angle: 135 },
+  { name: 'Pastel Rose-Coral', start: '#FAA0A0', end: '#F8B195', angle: 135 },
+];
+
+// Cover pastel colors
+const COVER_PASTELS = [
+  { name: 'Pastel Pink', color: '#FFD1DC' },
+  { name: 'Pastel Blue', color: '#AEC6CF' },
+  { name: 'Pastel Mint', color: '#B5EAD7' },
+  { name: 'Pastel Lavender', color: '#E6E6FA' },
+  { name: 'Pastel Peach', color: '#FFDAB9' },
+  { name: 'Pastel Yellow', color: '#FDFD96' },
+  { name: 'Pastel Coral', color: '#F8B195' },
+  { name: 'Pastel Green', color: '#C1E1C1' },
+  { name: 'Pastel Purple', color: '#D8BFD8' },
+  { name: 'Pastel Orange', color: '#FFB347' },
+  { name: 'Pastel Cyan', color: '#C0E8F9' },
+  { name: 'Pastel Rose', color: '#FAA0A0' },
+];
+
 export default function Home() {
   // Cover Generator States
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [coverBackgroundType, setCoverBackgroundType] = useState<'image' | 'gradient' | 'solid'>('image');
+  const [coverSelectedGradient, setCoverSelectedGradient] = useState<CoverGradient | null>(null);
+  const [coverSelectedSolidColor, setCoverSelectedSolidColor] = useState<string | null>(null);
   const [logoImage, setLogoImage] = useState<HTMLImageElement | null>(null);
   const [showSearch, setShowSearch] = useState(false);
   const canvasRef = useRef<CanvasHandle | null>(null);
@@ -155,41 +206,173 @@ export default function Home() {
               <div className="space-y-3">
                 <Canvas
                   ref={canvasRef}
-                  backgroundImage={backgroundImage}
+                  backgroundImage={coverBackgroundType === 'image' ? backgroundImage : null}
+                  backgroundGradient={coverBackgroundType === 'gradient' ? coverSelectedGradient : null}
+                  backgroundSolidColor={coverBackgroundType === 'solid' ? coverSelectedSolidColor : null}
                   logoImage={logoImage}
                   onLogoTransform={() => {}}
                 />
               </div>
 
-              {/* Controls */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {/* Background */}
-                <div className="relative">
+              {/* Background Type Selector */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-slate-700">Background Type</h3>
+                <div className="flex gap-2">
                   <button
-                    onClick={() => setShowSearch(!showSearch)}
+                    onClick={() => {
+                      setCoverBackgroundType('image');
+                      setCoverSelectedGradient(null);
+                      setCoverSelectedSolidColor(null);
+                    }}
                     className={cn(
-                      "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium",
-                      backgroundImage
-                        ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                        : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      "flex-1 px-3 py-2 border-2 rounded-lg transition-all text-sm font-medium",
+                      coverBackgroundType === 'image' ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-300 hover:border-slate-400"
                     )}
                   >
-                    <Search className="w-4 h-4" />
-                    {backgroundImage ? "✓ Background Set" : "Search Background"}
+                    Image
                   </button>
-                  {backgroundImage && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setBackgroundImage(null);
-                      }}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
-                      title="Remove background"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => {
+                      setCoverBackgroundType('gradient');
+                      setBackgroundImage(null);
+                      setCoverSelectedSolidColor(null);
+                    }}
+                    className={cn(
+                      "flex-1 px-3 py-2 border-2 rounded-lg transition-all text-sm font-medium",
+                      coverBackgroundType === 'gradient' ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-300 hover:border-slate-400"
+                    )}
+                  >
+                    Gradient
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCoverBackgroundType('solid');
+                      setBackgroundImage(null);
+                      setCoverSelectedGradient(null);
+                    }}
+                    className={cn(
+                      "flex-1 px-3 py-2 border-2 rounded-lg transition-all text-sm font-medium",
+                      coverBackgroundType === 'solid' ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-300 hover:border-slate-400"
+                    )}
+                  >
+                    Solid Pastel
+                  </button>
                 </div>
+              </div>
+
+              {/* Background Options */}
+              {coverBackgroundType === 'gradient' && (
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-slate-700">Vibrant Gradients</h3>
+                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                      {COVER_GRADIENTS_VIBRANT.map((gradient) => (
+                        <button
+                          key={gradient.name}
+                          onClick={() => setCoverSelectedGradient(gradient)}
+                          className={cn(
+                            "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
+                            coverSelectedGradient?.name === gradient.name
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-slate-200"
+                          )}
+                          title={gradient.name}
+                        >
+                          <div
+                            className="w-full h-full"
+                            style={{
+                              background: `linear-gradient(${gradient.angle}deg, ${gradient.start}, ${gradient.end})`,
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-slate-700">Pastel Gradients</h3>
+                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                      {COVER_GRADIENTS_PASTEL.map((gradient) => (
+                        <button
+                          key={gradient.name}
+                          onClick={() => setCoverSelectedGradient(gradient)}
+                          className={cn(
+                            "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
+                            coverSelectedGradient?.name === gradient.name
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-slate-200"
+                          )}
+                          title={gradient.name}
+                        >
+                          <div
+                            className="w-full h-full"
+                            style={{
+                              background: `linear-gradient(${gradient.angle}deg, ${gradient.start}, ${gradient.end})`,
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {coverBackgroundType === 'solid' && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-slate-700">Choose Pastel Color</h3>
+                  <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                    {COVER_PASTELS.map((pastel) => (
+                      <button
+                        key={pastel.name}
+                        onClick={() => setCoverSelectedSolidColor(pastel.color)}
+                        className={cn(
+                          "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
+                          coverSelectedSolidColor === pastel.color
+                            ? "border-blue-500 ring-2 ring-blue-200"
+                            : "border-slate-200"
+                        )}
+                        title={pastel.name}
+                      >
+                        <div
+                          className="w-full h-full"
+                          style={{ backgroundColor: pastel.color }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Controls */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Background Image Search - only show when image type selected */}
+                {coverBackgroundType === 'image' && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowSearch(!showSearch)}
+                      className={cn(
+                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all font-medium",
+                        backgroundImage
+                          ? "bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      )}
+                    >
+                      <Search className="w-4 h-4" />
+                      {backgroundImage ? "✓ Background Set" : "Search Background"}
+                    </button>
+                    {backgroundImage && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setBackgroundImage(null);
+                        }}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md transition-colors"
+                        title="Remove background"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {/* Logo Upload */}
                 <div className="relative">
@@ -239,7 +422,7 @@ export default function Home() {
                 {/* Export */}
                 <button
                   onClick={handleExportCover}
-                  disabled={!backgroundImage && !logoImage}
+                  disabled={!backgroundImage && !coverSelectedGradient && !coverSelectedSolidColor && !logoImage}
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 transition-all font-medium disabled:cursor-not-allowed"
                 >
                   <Download className="w-4 h-4" />
@@ -293,7 +476,7 @@ export default function Home() {
               )}
 
               {/* Search Panel */}
-              {showSearch && (
+              {coverBackgroundType === 'image' && showSearch && (
                 <div className="border-t pt-4 animate-in fade-in slide-in-from-top-2 duration-200">
                   <UnsplashSearch
                     onSelectImage={(url) => {
