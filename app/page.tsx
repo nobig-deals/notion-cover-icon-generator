@@ -31,8 +31,8 @@ const IconCanvas = dynamic(() => import('@/components/IconCanvas'), {
   ),
 });
 
-// Cover background gradients
-const COVER_GRADIENTS: CoverGradient[] = [
+// Cover background gradients - vibrant
+const COVER_GRADIENTS_VIBRANT: CoverGradient[] = [
   { name: 'Blue Purple', start: '#667eea', end: '#764ba2', angle: 135 },
   { name: 'Pink Orange', start: '#f857a6', end: '#ff5858', angle: 135 },
   { name: 'Green Blue', start: '#11998e', end: '#38ef7d', angle: 135 },
@@ -45,6 +45,22 @@ const COVER_GRADIENTS: CoverGradient[] = [
   { name: 'Peach', start: '#ed4264', end: '#ffedbc', angle: 135 },
   { name: 'Mint', start: '#00d2ff', end: '#3a7bd5', angle: 135 },
   { name: 'Rose', start: '#f12711', end: '#f5af19', angle: 135 },
+];
+
+// Cover background gradients - pastel
+const COVER_GRADIENTS_PASTEL: CoverGradient[] = [
+  { name: 'Pastel Pink-Peach', start: '#FFD1DC', end: '#FFDAB9', angle: 135 },
+  { name: 'Pastel Blue-Mint', start: '#AEC6CF', end: '#B5EAD7', angle: 135 },
+  { name: 'Pastel Mint-Green', start: '#B5EAD7', end: '#C1E1C1', angle: 135 },
+  { name: 'Pastel Lavender-Pink', start: '#E6E6FA', end: '#FFD1DC', angle: 135 },
+  { name: 'Pastel Peach-Yellow', start: '#FFDAB9', end: '#FDFD96', angle: 135 },
+  { name: 'Pastel Yellow-Mint', start: '#FDFD96', end: '#B5EAD7', angle: 135 },
+  { name: 'Pastel Coral-Peach', start: '#F8B195', end: '#FFDAB9', angle: 135 },
+  { name: 'Pastel Green-Cyan', start: '#C1E1C1', end: '#C0E8F9', angle: 135 },
+  { name: 'Pastel Purple-Lavender', start: '#D8BFD8', end: '#E6E6FA', angle: 135 },
+  { name: 'Pastel Orange-Yellow', start: '#FFB347', end: '#FDFD96', angle: 135 },
+  { name: 'Pastel Cyan-Blue', start: '#C0E8F9', end: '#AEC6CF', angle: 135 },
+  { name: 'Pastel Rose-Coral', start: '#FAA0A0', end: '#F8B195', angle: 135 },
 ];
 
 // Cover pastel colors
@@ -246,29 +262,56 @@ export default function Home() {
 
               {/* Background Options */}
               {coverBackgroundType === 'gradient' && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-slate-700">Choose Background Gradient</h3>
-                  <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
-                    {COVER_GRADIENTS.map((gradient) => (
-                      <button
-                        key={gradient.name}
-                        onClick={() => setCoverSelectedGradient(gradient)}
-                        className={cn(
-                          "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
-                          coverSelectedGradient?.name === gradient.name
-                            ? "border-blue-500 ring-2 ring-blue-200"
-                            : "border-slate-200"
-                        )}
-                        title={gradient.name}
-                      >
-                        <div
-                          className="w-full h-full"
-                          style={{
-                            background: `linear-gradient(${gradient.angle}deg, ${gradient.start}, ${gradient.end})`,
-                          }}
-                        />
-                      </button>
-                    ))}
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-slate-700">Vibrant Gradients</h3>
+                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                      {COVER_GRADIENTS_VIBRANT.map((gradient) => (
+                        <button
+                          key={gradient.name}
+                          onClick={() => setCoverSelectedGradient(gradient)}
+                          className={cn(
+                            "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
+                            coverSelectedGradient?.name === gradient.name
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-slate-200"
+                          )}
+                          title={gradient.name}
+                        >
+                          <div
+                            className="w-full h-full"
+                            style={{
+                              background: `linear-gradient(${gradient.angle}deg, ${gradient.start}, ${gradient.end})`,
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-slate-700">Pastel Gradients</h3>
+                    <div className="grid grid-cols-6 md:grid-cols-12 gap-2">
+                      {COVER_GRADIENTS_PASTEL.map((gradient) => (
+                        <button
+                          key={gradient.name}
+                          onClick={() => setCoverSelectedGradient(gradient)}
+                          className={cn(
+                            "aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105",
+                            coverSelectedGradient?.name === gradient.name
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-slate-200"
+                          )}
+                          title={gradient.name}
+                        >
+                          <div
+                            className="w-full h-full"
+                            style={{
+                              background: `linear-gradient(${gradient.angle}deg, ${gradient.start}, ${gradient.end})`,
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
